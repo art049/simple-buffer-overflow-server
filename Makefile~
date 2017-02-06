@@ -1,0 +1,9 @@
+PORT = 4000
+.PHONY : vuln_server
+vuln_server : main
+	makefifo ./nc_in
+	makefifo ./nc_out
+	./a.out < ./nc_out > ./nc_in &
+	nc -v -l -p $(PORT) ./nc_in | tee ./nc_out
+.PHONY : clean
+	rm -f ./nc_in ./nc_out main
