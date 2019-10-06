@@ -1,4 +1,4 @@
-PORT = 4000
+PORT ?= 4000
 
 % : %.c
 	$(CC) $< -g -o $@ -fno-stack-protector -z execstack -no-pie
@@ -7,7 +7,7 @@ PORT = 4000
 serve_vulnerability : main fifo_clean
 	@mkfifo ./nc_in && mkfifo ./nc_out && echo "FIFOs ready"
 	@(./main < ./nc_out 2>./nc_in > ./nc_in &) && echo "Server handler ready"
-	echo "Starting server on port ${PORT}"
+	@echo "Starting server on port ${PORT}"
 	@nc -v -k -l -p $(PORT) < ./nc_in | tee ./nc_out 1>/dev/null 
 client :
 	nc localhost $(PORT)
